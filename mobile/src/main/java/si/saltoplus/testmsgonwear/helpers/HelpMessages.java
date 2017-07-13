@@ -65,7 +65,7 @@ public class HelpMessages implements GoogleApiClient.OnConnectionFailedListener 
         mGoogleApiClient.disconnect();
     }
 
-    public void sendToFirstNode() {
+    public void sendToFirstNode(@Nullable final byte[] data) {
         // Find the connected watches and store their UUIDs to distinguish at a later moment
         Wearable.NodeApi.getConnectedNodes(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
@@ -81,17 +81,17 @@ public class HelpMessages implements GoogleApiClient.OnConnectionFailedListener 
                         mNode = nodes.get(0).getId();
                         Log.e(TAG, "Node is nearby: " + nodes.get(0).isNearby());
                         Log.e(TAG, mNode);
-                        send();
+                        send(data);
                     }
                 });
     }
 
-    private void send() {
+    private void send(@Nullable byte[] data) {
         Log.e(TAG, "Trying to send message to: " + mNode);
 
         if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
 
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode, ACTIVITY_PATH, new byte[0]).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode, ACTIVITY_PATH, data).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
             @Override
             public void onResult(MessageApi.SendMessageResult sendMessageResult) {
                 if (!sendMessageResult.getStatus().isSuccess()) {

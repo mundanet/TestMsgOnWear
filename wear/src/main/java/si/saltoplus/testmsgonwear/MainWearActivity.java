@@ -28,6 +28,13 @@ public class MainWearActivity extends WearableActivity {
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
         mTextView = (TextView) findViewById(R.id.text);
         mClockView = (TextView) findViewById(R.id.clock);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            byte[] data = extras.getByteArray("data");
+            if (data != null)
+                mTextView.setText(new String(data));
+        }
     }
 
     @Override

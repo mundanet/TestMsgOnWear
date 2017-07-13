@@ -37,8 +37,11 @@ public class MsgListenerService extends WearableListenerService {
 
         // Check to see if the message is to start an activity
         if (messageEvent.getPath().equals(ACTIVITY_PATH)) {
+            byte[] data = messageEvent.getData();
+
             Intent startIntent = new Intent(this, MainWearActivity.class);
             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startIntent.putExtra("data", data);
             startActivity(startIntent);
         }
         LOGD(TAG, "onMessageReceived: finished");
