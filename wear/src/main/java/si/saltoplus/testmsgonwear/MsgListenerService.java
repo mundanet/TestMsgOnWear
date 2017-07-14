@@ -14,6 +14,8 @@ public class MsgListenerService extends WearableListenerService {
 
     private static final String TAG = "MsgListenerService";
 
+    public static final String BASE_PATH = "/mundanet";
+
     public static final String LOGIN_PATH = "/login";
     public static final String MESSAGE_PATH = "/msg";
     public static final String ACTIVITY_PATH = "/startActivity";
@@ -35,8 +37,11 @@ public class MsgListenerService extends WearableListenerService {
     public void onMessageReceived(MessageEvent messageEvent) {
         LOGD(TAG, "onMessageReceived: " + messageEvent);
 
+        //filter out the pathPrefix
+        String path = messageEvent.getPath().substring(BASE_PATH.length());
+
         // Check to see if the message is to start an activity
-        if (messageEvent.getPath().equals(ACTIVITY_PATH)) {
+        if( path.equalsIgnoreCase( ACTIVITY_PATH ) ) {
             byte[] data = messageEvent.getData();
 
             Intent startIntent = new Intent(this, MainWearActivity.class);

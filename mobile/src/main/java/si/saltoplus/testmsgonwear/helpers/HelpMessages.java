@@ -26,13 +26,15 @@ public class HelpMessages implements GoogleApiClient.OnConnectionFailedListener 
 
     private static final String TAG = "HelpMessages";
 
+    public static final String BASE_PATH = "/mundanet";
+
     public static final String LOGIN_PATH = "/login";
     public static final String MESSAGE_PATH = "/msg";
     public static final String ACTIVITY_PATH = "/startActivity";
 
     private GoogleApiClient mGoogleApiClient;
 
-    private String mNode;
+    private Node mNode;
     private final Context mContext;
     private final Activity mActivity;
 
@@ -78,20 +80,21 @@ public class HelpMessages implements GoogleApiClient.OnConnectionFailedListener 
                             return;
                         }
 
-                        mNode = nodes.get(0).getId();
-                        Log.e(TAG, "Node is nearby: " + nodes.get(0).isNearby());
-                        Log.e(TAG, mNode);
+                        mNode = nodes.get(0);
+                        Log.e(TAG, "Node is nearby: " + mNode.isNearby());
+                        Log.e(TAG, mNode.getId());
                         send(data);
                     }
                 });
     }
 
     private void send(@Nullable byte[] data) {
-        Log.e(TAG, "Trying to send message to: " + mNode);
+        Log.e(TAG, "Trying to send message to: " + mNode.getDisplayName());
 
         if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
 
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode, ACTIVITY_PATH, data).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+        final String onPath = BASE_PATH+ACTIVITY_PATH;
+        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), onPath, data).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
             @Override
             public void onResult(MessageApi.SendMessageResult sendMessageResult) {
                 if (!sendMessageResult.getStatus().isSuccess()) {
@@ -100,7 +103,7 @@ public class HelpMessages implements GoogleApiClient.OnConnectionFailedListener 
                     return;
                 }
                 Log.e(TAG, "Message successfully sent");
-                showToast(sendMessageResult.getStatus().toString());
+                showToast(onPath + " -> SENT!");
             }
         });
 
